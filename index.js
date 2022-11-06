@@ -42,9 +42,6 @@ app.post('/api/genres/:name', (req, res) => {
 app.put('/api/genres/:id', (req, res) => {
     const genre = genres.find(g => g.id === parseInt(req.params.id));
     if (!genre) return res.status(404).send('Genre with given id not found');
-    
-    // const { error  } = validateGenre(req.body);
-    // if (error) return res.status(404).send(error.details[0].message);
 
     genre.name = req.body.name;
     res.send(genre);
@@ -65,12 +62,3 @@ app.delete('/api/genres/:id', (req, res) => {
 app.listen(8080, () => {
     console.log('Listening on port 8080');
 });
-
-
-// function validateGenre(genre) {
-//     const schema = {
-//         name: Joi.string().min(4).required()
-//     };
-//     Joi.valid()
-//     return Joi.validate(genre, schema);
-// }
