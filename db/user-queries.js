@@ -17,8 +17,14 @@ const getUserById = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(results.rows)
-        response.status(200).json(results.rows)
+        // console.log(results.rows)
+        // response.status(200).json(results.rows)
+
+        let result = results.rows[0] ? results.rows[0]:{};
+    
+        console.log('Getting user from DB:', result)
+
+        response.status(201).send({status:"success", data:result})
     })
 }
 
