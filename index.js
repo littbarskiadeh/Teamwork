@@ -1,8 +1,10 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
-const db = require('./db/user-queries')
-const post = require('./db/post-queries')
+
+// import routes
+const posts = require('./routes/posts.routes');
+const users = require('./routes/users.routes');
 
 const port = 3000
 
@@ -16,22 +18,14 @@ app.use(
     })
 )
 
+app.use('/posts', posts)
+app.use('/users', users)
+
 app.get('/', (request, response) => {
     response.json({
         info: 'Node.js, Express, and Postgres for Teamwork API'
     })
 })
-app.get('/users', db.getUsers)
-app.get('/users/:id', db.getUserById)
-app.post('/users', db.createUser)
-app.put('/users/:id', db.updateUser)
-app.delete('/users/:id', db.deleteUser)
-
-app.get('/posts', post.getPosts)
-app.get('/posts/:id', post.getPostById)
-app.post('/posts', post.createPost)
-app.put('/posts/:id', post.updatePost)
-app.delete('/posts/:id', post.deletePost)
 
 app.listen(port, () => {
     console.log(`App running on port ${port}.`)
