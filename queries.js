@@ -2,9 +2,10 @@ const Pool = require('pg').Pool
 require('dotenv').config()
 
 const pass = process.env.PASSWORD;
+const dbUser = process.env.DBUSER;
 
 const pool = new Pool({
-    user: 'postgres',
+    user: dbUser,
     host: 'localhost',
     database: 'user_db',
     password: pass,
@@ -37,13 +38,15 @@ const createUser = (request, response) => {
         name,
         email
     } = request.body
-    pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
+    pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
         if (error) {
             throw error
         }
-        const result = JSON.stringify(results.rowCount)
-        console.log(`User added with ID: ${results.rowCount}`)
-        response.status(201).send(`User added successfully ${result}`) //work on returning object in response
+        let result = results.rows[0] ? results.rows[0]:{};
+    
+        console.log('User added:', result)
+
+        response.status(201).send({status:"success", data:result})
     })
 }
 
@@ -55,14 +58,17 @@ const updateUser = (request, response) => {
         email
     } = request.body
     pool.query(
-        'UPDATE users SET name = $1, email = $2 WHERE id = $3',
+        'UPDATE users SET name = $1, email = $2 WHERE id = $3 RETURNING *',
         [name, email, id],
         (error, results) => {
             if (error) {
                 throw error
             }
-            console.log(`User modified with ID: ${id}`)
-            response.status(200).send(`User modified with ID: ${id}`)
+            let result = results.rows[0]
+            console.log(`User with id:, ${result.id} has been modified`)
+
+            response.status(201).send(result)
+
         }
     )
 }
@@ -74,8 +80,8 @@ const deleteUser = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(`User deleted with ID: ${id}`)
-        response.status(200).send(`User deleted with ID: ${id}`)
+        console.log(`User with ID: ${id} deleted successfully`)
+        response.status(200).send(`User with ID: ${id} deleted successfully`)
     })
 }
 
