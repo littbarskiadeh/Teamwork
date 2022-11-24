@@ -1,16 +1,5 @@
-const Pool = require('pg').Pool
-require('dotenv').config()
-
-const pass = process.env.PASSWORD;
-const dbUser = process.env.DBUSER;
-
-const pool = new Pool({
-    user: dbUser,
-    host: 'localhost',
-    database: 'user_db',
-    password: pass,
-    port: 5432,
-})
+const conn = require('./db-connection');
+const pool = conn.pool;
 
 const getUsers = (request, response) => {
     pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
@@ -65,9 +54,9 @@ const updateUser = (request, response) => {
                 throw error
             }
             let result = results.rows[0]
-            console.log(`User with id:, ${result.id} has been modified`)
+            console.log(`User with id ${result.id} has been modified`)
 
-            response.status(201).send(result)
+            response.status(201).json( results.rows)
 
         }
     )
@@ -81,7 +70,7 @@ const deleteUser = (request, response) => {
             throw error
         }
         console.log(`User with ID: ${id} deleted successfully`)
-        response.status(200).send(`User with ID: ${id} deleted successfully`)
+        response.status(200).send(`User with ID ${id} deleted successfully`)
     })
 }
 
