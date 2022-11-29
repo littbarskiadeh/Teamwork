@@ -5,6 +5,7 @@ const app = express()
 // import routes
 const posts = require('./routes/posts.routes');
 const users = require('./routes/users.routes');
+const auth = require('./routes/auth.routes');
 
 
 const port = 3000
@@ -18,11 +19,12 @@ app.use(
     })
 )
 
+app.use('/auth', auth)
 app.use('/posts', posts)
 app.use('/users', users)
 
 app.get('/', (request, response) => {
-    response.json({ info: 'Teamwork API versinpmon1.0'    })
+    response.json({ info: 'Teamwork API version1.0'    })
 })
 
 app.listen(port, () => { console.log(`App running on port ${port}.`) })

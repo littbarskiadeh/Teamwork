@@ -10,6 +10,9 @@ const pool = new Pool({
     database: 'user_db',
     password: pass,
     port: 5432,
+    max: 1,
+    connectionTimeoutMillis: 1000,
+    idleTimeoutMillis: 1000
 })
 
 
