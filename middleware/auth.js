@@ -31,23 +31,24 @@ const Auth = {
     }
   },
 
-  async isAdmin(req, res, next) {
-    let email = req.body.email;
+  async isAdmin(req, res, next) { //check if the user calling the function is admin
+    // let {username} = req.body;
+    let userID = req.user.id;
     let adminType = 1;
     // username = username.toLowerCase();
 
-    if(!email) {
-      return res.status(400).send({ 'message': 'email is not provided in request body' });
+    if(!userID) {
+      return res.status(400).send({ 'message': 'LoggedIn user ID is not provided in request body' });
     }
     try {
-      const text = 'SELECT * FROM users WHERE usertype = $1 AND email = $2';
-      const { rows } = await db.query(text, [adminType,username]);
+      const text = 'SELECT * FROM users WHERE usertype = $1 AND user_id = $2';
+      const { rows } = await db.query(text, [adminType,userID]);
 
       if(!rows[0]) {
-        return res.status(400).send({ 'message': 'The email you provided is invalid' });
+        return res.status(400).send({ 'message': 'User is not an admin' });
       }
 
-      req.user = { usertype: rows[0].usertype };//admin=1
+      req.user = { ...req.user, usertype: rows[0].usertype };//admin=1
       
       next();
     } catch(error) {
