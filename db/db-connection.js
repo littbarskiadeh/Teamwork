@@ -12,7 +12,10 @@ const pool = new Pool({
     port: 5432,
     max: 1,
     connectionTimeoutMillis: 1000,
-    idleTimeoutMillis: 1000
+    idleTimeoutMillis: 1000,
+    debug: true,
+    logging: true,
+    synchronize: true,
 })
 
 

@@ -6,8 +6,9 @@ CREATE TABLE users (
   type VARCHAR(30)
 );
 
-INSERT INTO users (name, email)
-   VALUES ('Joe', 'joe@example.com'), ('Ruby', 'ruby@example.com'), ('Test User82', 'test842.domain@mail.com');
+-- Update column names
+-- INSERT INTO users (name, email)
+--    VALUES ('Joe', 'joe@example.com'), ('Ruby', 'ruby@example.com'), ('Test User82', 'test842.domain@mail.com');
 
 
 CREATE TABLE posts (
@@ -17,5 +18,6 @@ CREATE TABLE posts (
   type VARCHAR(30)
 );
 
-INSERT INTO posts (title, description, type)
-   VALUES ('Test post', 'Initial post for test on new platform this is the description', '1'), ('Test post2', 'Second post for test on new platform this is the description', '2');
+-- Update columns
+-- INSERT INTO posts (title, description, type)
+--    VALUES ('Test post', 'Initial post for test on new platform this is the description', '1'), ('Test post2', 'Second post for test on new platform this is the description', '2');

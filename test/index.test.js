@@ -9,6 +9,11 @@ let should = chai.should();
 
 chai.use(chaiHttp);
 
+// let testUser = {
+//     name: "Unit Test User",
+//     email: "mochatest@mail.com"
+// }
+
 //Our parent block
 describe('Users', () => {
 
