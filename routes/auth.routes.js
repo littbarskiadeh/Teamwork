@@ -1,7 +1,7 @@
 let express = require('express');
 const router = express.Router();
 
-const db = require('../db/user-queries');
+// const db = require('../db/user-queries');
 const User = require('../db/auth-queries');
 
 

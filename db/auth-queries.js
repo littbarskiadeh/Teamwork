@@ -73,7 +73,7 @@ const User = {
             return res.status(400).send({ 'message': 'Please enter a valid email address' });
         }
         const text = 'SELECT * FROM users WHERE email = $1 OR username = $1';
-        // const loginQuery = 'UPDATE users SET isloggedin = 1 WHERE email = $1 RETURNING *'
+        const loginQuery = 'UPDATE users SET isloggedin = 1 WHERE email = $1 RETURNING *'
         try {
             console.log(`Running query: ${text}`)
             let { rows } = await db.query(text, [req.body.email ]);
@@ -88,7 +88,7 @@ const User = {
             const token = Helper.generateToken(rows[0].user_id);
 
             //update the login status field
-            //  ({ rows } = await db.query(loginQuery, [req.body.email]));
+             ({ rows } = await db.query(loginQuery, [req.body.email]));
 
             const user = rows[0];
             user.token = token;

@@ -24,44 +24,50 @@ const getPostById = (request, response) => {
 
 const createPost = (request, response) => {
     const {
-        name,
-        email
+        title,
+        description,
+        type,
     } = request.body
-    pool.query('INSERT INTO posts (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
-        if (error) {
-            throw error
-        }
-        let result = results.rows[0] ? results.rows[0]:{};
-    
-        console.log('Post added:', result)
 
-        response.status(201).send({status:"success", data:result})
-    })
+    //ADD ownerID to post object
+    const ownerId = request.user.id;
+    console.log('Creating new post for user with id ' + ownerId)
+
+    pool.query('INSERT INTO posts (title, description, type, ownerid) VALUES ($1, $2, $3, $4) RETURNING *',
+        [title, description, type, ownerId], (error, results) => {
+            if (error) {
+                throw error
+            }
+            let result = results.rows[0] ? results.rows[0] : {};
+
+            console.log('Post added:', result)
+
+            response.status(201).send({ status: "success", data: result })
+        })
 }
 
 
 const updatePost = (request, response) => {
     const id = parseInt(request.params.id)
     const {
-        name,
-        email
+        title,
+        description,
     } = request.body
     pool.query(
-        'UPDATE posts SET name = $1, email = $2 WHERE id = $3 RETURNING *',
-        [name, email, id],
+        'UPDATE posts SET title = $1, description = $2 WHERE id = $3 RETURNING *',
+        [title, description, id],
         (error, results) => {
             if (error) {
                 throw error
             }
             let result = results.rows[0]
-            console.log(`Post with id ${result.id} has been modified`)
+            console.log(`Post with id: ${result.id}, has been modified`)
 
-            response.status(201).json( results.rows)
+            response.status(201).json(results.rows)
 
         }
     )
 }
-
 
 const deletePost = (request, response) => {
     const id = parseInt(request.params.id)
