@@ -88,25 +88,25 @@ const getUserById = (request, response) => {
 //     })
 // }
 
-const createUser = (request, response) => {
-    const {
-        name,
-        email
-    } = request.body
-    // const queryParams = [name, content]
-    // const query = 'INSERT INTO note (name, content) VALUES ($1, $2)'
-    // await poolClient.query(query, queryParams)
-    pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
-        if (error) {
-            throw error
-        }
-        let result = results.rows[0] ? results.rows[0] : {};
+// const createUser = (request, response) => {
+//     const {
+//         name,
+//         email
+//     } = request.body
+//     // const queryParams = [name, content]
+//     // const query = 'INSERT INTO note (name, content) VALUES ($1, $2)'
+//     // await poolClient.query(query, queryParams)
+//     pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
+//         if (error) {
+//             throw error
+//         }
+//         let result = results.rows[0] ? results.rows[0] : {};
 
-        console.log('User added:', result)
+//         console.log('User added:', result)
 
-        response.status(201).send({ status: "success", data: result })
-    })
-}
+//         response.status(201).send({ status: "success", data: result })
+//     })
+// }
 
 
 const updateUser = (request, response) => {
@@ -132,16 +132,16 @@ const updateUser = (request, response) => {
     )
 }
 
-// const deleteUser = (request, response) => {
-//     const id = parseInt(request.params.id)
-//     pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-//         if (error) {
-//             throw error
-//         }
-//         console.log(`User with ID: ${id} deleted successfully`)
-//         response.status(200).send(`User with ID ${id} deleted successfully`)
-//     })
-// }
+const deleteUser = (request, response) => {
+    const id = parseInt(request.params.id)
+    pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
+        if (error) {
+            throw error
+        }
+        console.log(`User with ID: ${id} deleted successfully`)
+        response.status(200).send(`User with ID ${id} deleted successfully`)
+    })
+}
 
 const deleteAllUsers = (request, response) => {
     const id = 1;//parseInt(request.params.id)
@@ -159,7 +159,7 @@ module.exports = {
     getUserById,
     // createUser,
     updateUser,
-    // deleteUser,
+    deleteUser,
     deleteAllUsers,
     // login,
     // logout

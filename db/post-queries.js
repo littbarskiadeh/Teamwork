@@ -23,13 +23,9 @@ const getPostById = (request, response) => {
 }
 
 const createPost = (request, response) => {
-    const {
-        title,
-        description,
-        type,
-    } = request.body
+    const { title, description, type } = request.body
 
-    //ADD ownerID to post object
+    //ADD ownerID to post/article object
     const ownerId = request.user.id;
     console.log('Creating new post for user with id ' + ownerId)
 
@@ -46,6 +42,26 @@ const createPost = (request, response) => {
         })
 }
 
+const addComment = (request, response) => {
+    const { comment } = request.body
+    const articleId = parseInt(request.params.id)
+    const commenterId = request.user.id;
+
+    console.log('Adding new comment from employee with id ' + commenterId)
+    console.log('Adding new comment ' + comment)
+
+    pool.query('INSERT INTO comments (comment, articleid, commenterid, updateddate)  VALUES ($1, $2, $3,now()) RETURNING *',
+        [comment,articleId,commenterId], (error, results) => {
+            if (error) {
+                throw error
+            }
+            let result = results.rows[0] ? results.rows[0] : {};
+            
+            console.log('Comment added:', result)
+
+            response.status(201).send({ status: "success", data:result })
+        })
+}
 
 const updatePost = (request, response) => {
     const id = parseInt(request.params.id)
@@ -54,7 +70,7 @@ const updatePost = (request, response) => {
         description,
     } = request.body
     pool.query(
-        'UPDATE posts SET title = $1, description = $2 WHERE id = $3 RETURNING *',
+        'UPDATE posts SET title = $1, description = $2, updateddate = now() WHERE id = $3 RETURNING *',
         [title, description, id],
         (error, results) => {
             if (error) {
@@ -84,6 +100,7 @@ module.exports = {
     getPosts,
     getPostById,
     createPost,
+    addComment,
     updatePost,
     deletePost,
 }
