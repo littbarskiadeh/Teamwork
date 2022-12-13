@@ -9,15 +9,13 @@ const Auth = require('../middleware/auth')
 // logged in user is an employee or admin
 
 router.route('/').get(Auth.verifyToken, db.getPosts)
-
 router.route('/:id').get(Auth.verifyToken,db.getPostById)
 
 router.route('/:id').post(Auth.verifyToken, db.addComment)
-
 router.route('/').post(Auth.verifyToken, db.createPost)
 
-
-router.route('/:id').put(Auth.verifyToken, Auth.isPostOwner, db.updatePost)
+// router.route('/:id').put(Auth.verifyToken, Auth.isPostOwner, db.updatePost)
+router.route('/:id').patch(Auth.verifyToken, Auth.isPostOwner, db.updatePost)
 
 router.route('/:id').delete(Auth.verifyToken, Auth.isPostOwner, db.deletePost)
 

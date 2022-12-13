@@ -2,13 +2,11 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const app = express()
 
-// import routes
 const posts = require('./routes/posts.routes');
+const gifs = require('./routes/gifs.routes');
+
 const users = require('./routes/users.routes');
 const auth = require('./routes/auth.routes');
-
-
-
 
 const port = 3000
 
@@ -22,7 +20,11 @@ app.use(
 )
 
 app.use('/auth', auth)
-app.use('/posts', posts)
+// app.use('/posts', posts)
+
+app.use('/articles', posts)
+app.use('/gifs', gifs)
+
 app.use('/users', users)
 
 app.get('/', (request, response) => {

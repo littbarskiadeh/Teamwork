@@ -6,14 +6,10 @@ const db = conn.pool;
 const Helper = require('../controllers/helper');
 
 const User = {
-    /**
-     * Create A User
-     * @param {object} req 
-     * @param {object} res
-     * @returns {object} reflection object 
-     */
+   
     async create(req, res) {
-        console.log("Create user called")
+        console.log(`Creating new user record`)
+
         if (!req.body.email || !req.body.password) {
             return res.status(400).send({ 'message': 'Some values are missing' });
         }
@@ -21,50 +17,58 @@ const User = {
             return res.status(400).send({ 'message': 'Please enter a valid email address' });
         }
         const hashPassword = Helper.hashPassword(req.body.password);
-        console.log("Hashed password: " + hashPassword);
-        const id = uuidv4();
+        
+        console.log(`Hashed password: ${hashPassword}`);
+        
+        const uuid = uuidv4();
         const values = [
-            id,
-            req.body.name,
+            uuid,
+            req.body.firstName,
+            req.body.lastName,
             req.body.email,
             req.body.username,
             hashPassword,
             parseInt(req.body.usertype),
-            moment(new Date())
+            moment(new Date()),
+            req.body.gender,
+            req.body.jobRole,
+            req.body.department,
+            req.body.address
         ];
 
-        const createQuery = `INSERT INTO users(user_id, name, email, username, password, usertype, created_date)
-            VALUES($1, $2, $3, $4, $5, $6, $7) returning *`;
-
+        const createQuery = `INSERT INTO users(uuid, firstName, lastName, email, username, password, usertype, createddate,gender, jobRole, department, address)
+            VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning *`;
 
         try {
             console.log("Running query: ", createQuery)
 
             const { rows } = await db.query(createQuery, values);
-
-            console.log("Query result: " + rows)
-
             const user = rows[0];
 
-            const token = Helper.generateToken(user.user_id);
-            console.log("Token generated: " + token);
+            console.log(`Generating token for uuid: ${user.uuid}`)
 
-            user.token = token; //send user object with token
+            const token = Helper.generateToken(user.uuid);
 
-            return res.status(201).send({ status: "success", data: user });
+            if(token){
+                console.log("Token generated: " + token);
+                user.token = token; //send user object with token
+            }else{console.log(`Token generation failed. Posting user object`)}
+            
+            let data = {
+                message: `User account successfully created`,
+                token: user.token,
+                userId: user.id,
+                uuid: user.uuid,
+                email: user.email
+            }
+            
+            return res.status(201).send({ status: "success", data });
         } catch (error) {
-            //   if (error.routine === '_bt_check_unique') {
-            //     return res.status(400).send({ 'message': 'User with that EMAIL already exist' })
-            //   }
             return res.status(400).send(error.message);
         }
     },
-    /**
-     * Login
-     * @param {object} req 
-     * @param {object} res
-     * @returns {object} user object 
-     */
+    
+    
     async login(req, res) {
         if (!req.body.email || !req.body.password) {
             return res.status(400).send({ 'message': 'Email or Password is missing' });

@@ -4,7 +4,6 @@ const pool = conn.pool;
 // import Helper from '../controllers/helper';
 
 const getUsers = (request, response) => {
-    console.log("Request >>>> ", request)
     pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
         if (error) {
             throw error
@@ -65,46 +64,6 @@ const getUserById = (request, response) => {
 
 //         console.log('Get user from DB:', user)
 //         response.status(201).send({ status: "success", data: user })
-//     })
-// }
-
-// const createUser = (request, response) => {
-//     const {
-//         name,
-//         email
-//     } = request.body
-//     // const queryParams = [name, content]
-//     // const query = 'INSERT INTO note (name, content) VALUES ($1, $2)'
-//     // await poolClient.query(query, queryParams)
-//     pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
-//         if (error) {
-//             throw error
-//         }
-//         let result = results.rows[0] ? results.rows[0] : {};
-
-//         console.log('User added:', result)
-
-//         response.status(201).send({ status: "success", data: result })
-//     })
-// }
-
-// const createUser = (request, response) => {
-//     const {
-//         name,
-//         email
-//     } = request.body
-//     // const queryParams = [name, content]
-//     // const query = 'INSERT INTO note (name, content) VALUES ($1, $2)'
-//     // await poolClient.query(query, queryParams)
-//     pool.query('INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *', [name, email], (error, results) => {
-//         if (error) {
-//             throw error
-//         }
-//         let result = results.rows[0] ? results.rows[0] : {};
-
-//         console.log('User added:', result)
-
-//         response.status(201).send({ status: "success", data: result })
 //     })
 // }
 

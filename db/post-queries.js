@@ -2,7 +2,7 @@ const conn = require('./db-connection');
 const pool = conn.pool;
 
 const getPosts = (request, response) => {
-    pool.query('SELECT * FROM posts ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT * FROM posts WHERE type=$1 ORDER BY createddate DESC',['1'], (error, results) => {
         if (error) {
             throw error
         }
@@ -29,7 +29,7 @@ const createPost = (request, response) => {
     const ownerId = request.user.id;
     console.log('Creating new post for user with id ' + ownerId)
 
-    pool.query('INSERT INTO posts (title, description, type, ownerid) VALUES ($1, $2, $3, $4) RETURNING *',
+    pool.query('INSERT INTO posts (title, description, type, ownerid,createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
         [title, description, type, ownerId], (error, results) => {
             if (error) {
                 throw error
@@ -50,7 +50,7 @@ const addComment = (request, response) => {
     console.log('Adding new comment from employee with id ' + commenterId)
     console.log('Adding new comment ' + comment)
 
-    pool.query('INSERT INTO comments (comment, articleid, commenterid, updateddate)  VALUES ($1, $2, $3,now()) RETURNING *',
+    pool.query('INSERT INTO comments (comment, postid, commenterid, createddate)  VALUES ($1, $2, $3,now()) RETURNING *',
         [comment,articleId,commenterId], (error, results) => {
             if (error) {
                 throw error

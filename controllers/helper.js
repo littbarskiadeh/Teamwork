@@ -29,14 +29,16 @@ const Helper = {
     },
     /**
      * Gnerate Token
-     * @param {string} id
+     * @param {string} uuid
      * @returns {string} token
      */
     generateToken(id) {
-        const token = jwt.sign({
-            user_id: id
-        },
-            process.env.SECRET, { expiresIn: '7d' }
+        // const token = jwt.sign({
+        //     uuid: id
+        // },
+        //     process.env.SECRET, { expiresIn: '7d' }
+        // );
+        const token = jwt.sign({uuid: id}, process.env.SECRET, { expiresIn: '7d' }
         );
         return token;
     }
