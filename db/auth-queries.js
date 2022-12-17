@@ -89,26 +89,28 @@ const User = {
                 return res.status(400).send({ 'message': 'The password you provided is incorrect' });
             }
             
-            const token = Helper.generateToken(rows[0].user_id);
+            const token = Helper.generateToken(rows[0].uuid);
 
             //update the login status field
              ({ rows } = await db.query(loginQuery, [req.body.email]));
 
             const user = rows[0];
             user.token = token;
-
             console.log(`User: ${user.username} logged in successfully!`)
-
-            return res.status(200).send({ status: "success", data: user });
+            
+            let data = {
+                token: user.token,
+                userId: user.id,
+                uuid: user.uuid
+            }
+            return res.status(200).send({ status: "success", data: data });
         } catch (error) {
             return res.status(400).send(error)
         }
     },
+    
     /**
-     * Delete A User
-     * @param {object} req 
-     * @param {object} res 
-     * @returns {void} return status code 204 
+     * 
      */
     async delete(req, res) {
         const deleteQuery = 'DELETE FROM users WHERE username=$1 returning *';

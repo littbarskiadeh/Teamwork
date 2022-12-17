@@ -1,7 +1,12 @@
+const os = require('os');
+const multer = require('multer');
+// const upload = multer({ dest: './db/gifs' });
+const upload = multer({ dest: os.tmpdir() });
+
 const conn = require('./db-connection');
 const pool = conn.pool;
 
-let image = './db/gifs/giphy.gif'
+// let image = './db/gifs/giphy.gif'
 
 const cloudinary = require('cloudinary').v2
 require('dotenv').config()
@@ -36,25 +41,23 @@ const getGifById = (request, response) => {
 }
 
 const createGif = (request, response) => {
-    // let imageURL = image;
-    let imageURL;
-    const { title } = request.body
-
-    if (request.body.image) { imageURL = request.body.image }
-
-    const ownerId = request.user.id;
+    
+    const { title } = request.body;
+    let imageURL = request.file.path;
+    const ownerId = request.user.uuid;
+    
     console.log('Creating new GIF for user with id ' + ownerId)
 
-    cloudinary.uploader.upload(image, (error, result) => {
-        console.log(`Uploading image with title: ${title}`);
+    cloudinary.uploader.upload(imageURL, (error, result) => {
+        console.log(`Uploading GIF with title: ${title}`);
 
         if (!error) {
-            console.log("Image uploaded ");
+            console.log("GIF uploaded ");
             console.log(result)
 
             imageURL = result.url;
 
-            pool.query('INSERT INTO posts (title, image, type, ownerid,createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
+            pool.query('INSERT INTO posts (title, image, type, ownerid, createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
                 [title, imageURL, gifType, ownerId], (error, results) => {
                     if (error) {
                         throw error
@@ -62,9 +65,18 @@ const createGif = (request, response) => {
                     let result = results.rows[0] ? results.rows[0] : {};
 
                     console.log(`\nA new GIF has been added. URL: ${result.image}`)
-                    // console.log('A new GIF has been added. URL: ', result.secure_url)
+                    // console.log(`A new GIF has been added. URL - ${result.secure_url}`)
+                    
+                    let data= {
+                        message: `GIF image successfully posted”`,
+                        gifID: result.id,
+                        createdOn: result.createddate.toLocaleString(),
+                        title: result.title,
+                        imageURL: result.image,
+                        ownerID: result.ownerid
+                    }
 
-                    response.status(201).send({ status: "success", data: result })
+                    response.status(201).send({ status: "success", data })
                 })
         }
     });
@@ -108,4 +120,5 @@ module.exports = {
     createGif,
     addComment,
     deleteGif,
+    upload
 }

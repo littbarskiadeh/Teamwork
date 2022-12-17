@@ -12,7 +12,7 @@ router.route('/').get(Auth.verifyToken, db.getGifs)
 router.route('/:id').get(Auth.verifyToken,db.getGifById)
 
 router.route('/:id').post(Auth.verifyToken, db.addComment)
-router.route('/').post(Auth.verifyToken, db.createGif)
+router.route('/').post(Auth.verifyToken, db.upload.single('file'), db.createGif) //file is the fieldname for the file uploaded
 
 router.route('/:id').delete(Auth.verifyToken, Auth.isPostOwner, db.deleteGif)
 

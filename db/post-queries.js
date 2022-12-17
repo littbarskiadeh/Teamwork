@@ -26,7 +26,7 @@ const createPost = (request, response) => {
     const { title, description, type } = request.body
 
     //ADD ownerID to post/article object
-    const ownerId = request.user.id;
+    const ownerId = request.user.uuid;
     console.log('Creating new post for user with id ' + ownerId)
 
     pool.query('INSERT INTO posts (title, description, type, ownerid,createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
@@ -45,7 +45,7 @@ const createPost = (request, response) => {
 const addComment = (request, response) => {
     const { comment } = request.body
     const articleId = parseInt(request.params.id)
-    const commenterId = request.user.id;
+    const commenterId = request.user.uuid;
 
     console.log('Adding new comment from employee with id ' + commenterId)
     console.log('Adding new comment ' + comment)

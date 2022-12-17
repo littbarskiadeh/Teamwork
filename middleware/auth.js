@@ -19,20 +19,20 @@ const Auth = {
 
             const decoded = await jwt.verify(token, process.env.SECRET);
             
-            Object.keys(decoded).forEach((value )=>console.log(value))
+            // Object.keys(decoded).forEach((value )=>console.log(value))
 
-            console.log(`decoded user token: ${decoded.uuid || decoded.user_id}`);
+            console.log(`decoded user token: ${decoded.uuid}`);
 
             const text = 'SELECT * FROM users WHERE uuid = $1';
 
-            const { rows } = await db.query(text, [decoded.user_id]);
+            const { rows } = await db.query(text, [decoded.uuid]);
             if (!rows[0]) {
                 return res.status(400).send({ 'message': 'The token you provided is invalid' });
             }
 
-            req.user = { uuid: decoded.uuid || decoded.user_id, usertype: rows[0].usertype };
+            req.user = { usertype: rows[0].usertype, uuid: decoded.uuid };
 
-            console.log("VerifyToken >>> ", req.user)
+            console.log(`Request user: ${req.user}`)
 
             next();
         } catch (error) {
@@ -41,7 +41,7 @@ const Auth = {
     },
 
     async isAdmin(req, res, next) { //check if the user calling the function is admin
-        let userID = req.user.uuid || req.user.user_id; //req.user.id is set by the VerifyToken function
+        let userID = req.user.uuid; //req.user.id is set by the VerifyToken function
         let adminType = 1;
 
         if (!userID) {
@@ -64,7 +64,7 @@ const Auth = {
     },
 
     async isEmployee(req, res, next) { //check if the user calling the function is admin
-        let userID = req.user.uuid || req.user.user_id; //req.user.id is set by the VerifyToken function
+        let userID = req.user.uuid; //req.user.id is set by the VerifyToken function
 
         let employeeType = 2;
 
@@ -86,7 +86,7 @@ const Auth = {
     },
 
     async isPostOwner(req, res, next) { //check if the user calling the function is admin
-        let userID = req.user.uuid || req.user.user_id; //req.user.id is set by the VerifyToken function
+        let userID = req.user.uuid; //req.user.id is set by the VerifyToken function
         let currentUserType = req.user.usertype;
 
         console.log('isPostOwner', req.user)
