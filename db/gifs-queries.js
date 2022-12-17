@@ -29,15 +29,51 @@ const getGifs = (request, response) => {
     })
 }
 
-const getGifById = (request, response) => {
-    const id = parseInt(request.params.id)
-    pool.query('SELECT * FROM posts WHERE type=$1 id = $2', [gifType, id], (error, results) => {
-        if (error) {
-            throw error
+const getGifById = async (request, response) => {
+    const id = request.params.id;
+    
+    const commentQuery = 'SELECT * FROM comments WHERE postid=$1';
+    const gifsQuery = 'SELECT * FROM posts WHERE type=$1 AND id= $2';
+
+    try {
+        console.log(`Running query: ${gifsQuery}`)
+
+        let { rows } = await pool.query(gifsQuery, [gifType,id]);
+
+        if (!rows[0]) {
+            return response.status(400).send({ 'message': 'No gif found with the id specified' });
         }
-        console.log(results.rows)
-        response.status(200).json(results.rows)
-    })
+
+        let gifs = rows;
+
+        //get comments
+        console.log(`Running query: ${commentQuery}`)
+        let comments = await pool.query(commentQuery, [id]);
+        
+        console.log(`Comments: ${comments}`)
+
+        comments = comments.rows;
+        console.log(`Comments Count ===>> ${comments.length}`)
+
+        //Get required fields for each comment
+        function getCommentsData(comm) {
+            return { commentId: comm.id, comment:comm.comment, authorId: comm.commenterid };
+        }
+        const postComments = comments.map(getCommentsData)
+
+        //for each article, attach comments
+        function getGIFData(gif) {
+            return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:postComments };
+        }
+        const data = gifs.map(getGIFData)
+
+        console.log(`Returning article with id ${id}`)
+        response.status(201).send({ status: "success", data })        
+    }
+    catch (error) {
+        console.log(`Error: ${error}`)
+        return response.status(400).send(error)
+    }
 }
 
 const createGif = (request, response) => {
@@ -57,7 +93,7 @@ const createGif = (request, response) => {
 
             imageURL = result.url;
 
-            pool.query('INSERT INTO posts (title, image, type, ownerid, createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
+            pool.query('INSERT INTO posts (title, description, type, ownerid, createddate,updateddate) VALUES ($1, $2, $3, $4,now(),now()) RETURNING *',
                 [title, imageURL, gifType, ownerId], (error, results) => {
                     if (error) {
                         throw error
@@ -68,7 +104,7 @@ const createGif = (request, response) => {
                     // console.log(`A new GIF has been added. URL - ${result.secure_url}`)
                     
                     let data= {
-                        message: `GIF image successfully posted”`,
+                        message: `GIF image successfully posted`,
                         gifID: result.id,
                         createdOn: result.createddate.toLocaleString(),
                         title: result.title,
@@ -85,21 +121,29 @@ const createGif = (request, response) => {
 const addComment = (request, response) => {
     const { comment } = request.body
     const gifId = parseInt(request.params.id)
-    const commenterId = request.user.id;
+    const commenterId = request.user.uuid;
 
     console.log('Adding new comment from employee with id ' + commenterId)
     console.log('Adding new comment ' + comment)
 
-    pool.query('INSERT INTO comments (comment, postid, commenterid, updateddate)  VALUES ($1, $2, $3,now()) RETURNING *',
+    pool.query('INSERT INTO comments (comment, postid, commenterid, createddate)  VALUES ($1, $2, $3,now()) RETURNING *',
         [comment, gifId, commenterId], (error, results) => {
             if (error) {
                 throw error
             }
             let result = results.rows[0] ? results.rows[0] : {};
 
-            console.log('Comment added:', result)
+            let data = {
+                message: `comment successfully added`,
+                createdOn: result.createddate.toLocaleString(),
+                gifTitle: result.title,
+                comment,
+                commentBy: commenterId
+            }
 
-            response.status(201).send({ status: "success", data: result })
+            console.log(`Comment added, ${comment}`)
+            response.status(201).send({ status: "success", data })
+            
         })
 }
 
@@ -109,8 +153,12 @@ const deleteGif = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(`Post with ID: ${id} deleted successfully`)
-        response.status(200).send(`Post with ID ${id} deleted successfully`)
+       
+        let data= {
+            message: `gif post successfully deleted`
+        }
+        console.log(`GIF with ID: ${id} deleted successfully`)
+        response.status(201).send({ status: "success", data })
     })
 }
 

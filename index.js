@@ -4,6 +4,7 @@ const app = express()
 
 const posts = require('./routes/posts.routes');
 const gifs = require('./routes/gifs.routes');
+const feed = require('./routes/feeds.routes');
 
 const users = require('./routes/users.routes');
 const auth = require('./routes/auth.routes');
@@ -24,6 +25,7 @@ app.use('/auth', auth)
 
 app.use('/articles', posts)
 app.use('/gifs', gifs)
+app.use('/feed', feed)
 
 app.use('/users', users)
 

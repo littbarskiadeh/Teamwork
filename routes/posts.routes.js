@@ -11,10 +11,11 @@ const Auth = require('../middleware/auth')
 router.route('/').get(Auth.verifyToken, db.getPosts)
 router.route('/:id').get(Auth.verifyToken,db.getPostById)
 
-router.route('/:id').post(Auth.verifyToken, db.addComment)
+router.route('/:id/comment').post(Auth.verifyToken, db.addComment)
 router.route('/').post(Auth.verifyToken, db.createPost)
 
-// router.route('/:id').put(Auth.verifyToken, Auth.isPostOwner, db.updatePost)
+// router.route('/:id').put( db.getFeed)
+
 router.route('/:id').patch(Auth.verifyToken, Auth.isPostOwner, db.updatePost)
 
 router.route('/:id').delete(Auth.verifyToken, Auth.isPostOwner, db.deletePost)
