@@ -2,6 +2,11 @@ let app = require('../index')
 const conn = require('../db/db-connection');
 const pool = conn.pool;
 
+var moment = require('moment');
+const { v4: uuidv4 } = require('uuid');
+const uuid = uuidv4();
+const auth = require('../db/auth-queries');
+
 //Require the dev-dependencies
 let chai = require('chai');
 let chaiHttp = require('chai-http');
@@ -9,29 +14,89 @@ let should = chai.should();
 
 chai.use(chaiHttp);
 
-// let testUser = {
-//     name: "Unit Test User",
-//     email: "mochatest@mail.com"
-// }
+let testEmployee = {
+    firstname: "Test",
+    lastname: "User",
+    username: "testuser",
+    email: "testuser@mail.com",
+    password: "test",
+    usertype: "2",
+    gender: "male",
+    jobrole: "HR Admin",
+    department: "HR",
+    address: "Maple Street, Toronto"
+}
+
+let testAdmin =  {
+    firstname: "Test",
+    lastname: "Admin",
+    username: "testadmin",
+    email: "testadmin@mail.com",
+    password: "test",
+    usertype: "1",
+    gender: "male",
+    jobrole: "Admin",
+    department: "IT",
+    address: "Maple Street, Toronto"
+}
 
 //Our parent block
 describe('Users', () => {
 
-    before('Insert fake data', async function () {
-        await pool.query('DELETE FROM users WHERE id != 1')
-        await pool.query("INSERT INTO users (name, email) VALUES ('Joe', 'joe@example.com'), ('Ruby', 'ruby@example.com'), ('Test User', 'testuser.domain@mail.com')")
+    // before('Insert fake data', async function () {
+    //     await pool.query('DELETE FROM users WHERE id != 1')
+    //     await pool.query("INSERT INTO users (name, email) VALUES ('Joe', 'joe@example.com'), ('Ruby', 'ruby@example.com'), ('Test User', 'testuser.domain@mail.com')")
+    // })
+    after('Delete testuser from DB', async function () {
+        await pool.query('DELETE FROM users WHERE username = $1',[testEmployee.username])
     })
-    after('Delete all users but 1', async function () {
-        await pool.query('DELETE FROM users WHERE id != 1')
-      })
 
-    /*
-      * Test the /GET route
-      */
+    describe('/POST users', () => {
+        it('it should Create an admin user', (done) => {
+
+            chai.request(app)
+                .post('/auth/create-user')
+                .send(testAdmin)
+                .end((err, res) => {
+                    
+                    // res.should.have.status(400); //since token is not provided
+                    res.body.should.be.a('object');
+                    res.body.data.should.have.property('message').eql('User account successfully created');
+                    res.body.data.should.have.property('token');
+
+                    testAdmin.token = res.body.data.token;
+                    // console.log('Test Admin token: ', testAdmin.token);
+                    
+                    done();
+                });
+        });
+        it('admin should Create an employee', (done) => {
+            
+            chai.request(app)
+                .post('/auth/create-user')
+                .set('x-access-token',testAdmin.token)
+                .send(testEmployee)
+                .end((err, res) => {
+                    
+                    // res.should.have.status(400); //since token is not provided
+                    res.body.should.be.a('object');
+                    res.body.data.should.have.property('message').eql('User account successfully created');
+                    res.body.data.should.have.property('token');
+
+                    testEmployee.token = res.body.data.token;
+                    // console.log('Test employee token: ', testEmployee.token);
+                    
+                    done();
+                });
+        });
+
+    });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+
     describe('/GET users', () => {
         it('it should GET all the users', (done) => {
             chai.request(app)
                 .get('/users')
+                .set('x-access-token',testEmployee.token)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.a('array');
@@ -41,58 +106,41 @@ describe('Users', () => {
         });
     });
 
-    describe('GET user', () => {
-        it('it should GET the user with given name', (done) => {
-            chai.request(app)
-                .get('/users')
-                .end((err, res) => {
-                    res.should.have.status(200);
-                    res.body.should.be.a('array');
-                    res.body.length.should.be.gt(1); //review test to something more meaningful
-                    done();
-                });
-        });
-    });
+    // describe('GET user', () => {
+    //     it('it should GET the article with given id', (done) => {
+    //         chai.request(app)
+    //             .get('/articles/'+ testEmployee.id)
+    //             .set('x-access-token',testEmployee.token)
+    //             .end((err, res) => {
+    //                 res.should.have.status(200);
+    //                 res.body.should.be.a('array');
+    //                 res.body.length.should.be.gt(1); //review test to something more meaningful
+    //                 done();
+    //             });
+    //     });
+    // });
 
     /*
     * Test the /POST route
     */
-    describe('/POST users', () => {
-        it('it should POST a user', (done) => {
-            let user = {
-                name: "Unit Test User",
-                email: "mochatest@mail.com"
-            }
-            chai.request(app)
-                .post('/users')
-                .send(user)
-                .end((err, res) => {
-                    res.should.have.status(201);
-                    res.body.should.be.a('object');
-                    res.body.should.have.property('status').eql('success');
-                    res.body.data.should.have.property('email');
-                    done();
-                });
-        });
+   
 
-    });
+    // describe('/GET/:id users', () => {
+    //     it('it should GET a user by the given id', (done) => {
 
-    describe('/GET/:id users', () => {
-        it('it should GET a user by the given id', (done) => {
+    //         let user = { id: 1, name: "Unit Test User", email: "mochatest@mail.com" }
 
-            let user = { id: 1, name: "Unit Test User", email: "mochatest@mail.com" }
-
-            chai.request(app)
-                .get('/users/' + user.id)
-                .end((err, res) => {
-                    res.should.have.status(201);
-                    res.body.should.be.a('object');
-                    res.body.data.should.have.property('name');
-                    res.body.data.should.have.property('id').eql(user.id);
-                    done();
-                });
-        });
-    });
+    //         chai.request(app)
+    //             .get('/users/' + user.id)
+    //             .end((err, res) => {
+    //                 res.should.have.status(201);
+    //                 res.body.should.be.a('object');
+    //                 res.body.data.should.have.property('name');
+    //                 res.body.data.should.have.property('id').eql(user.id);
+    //                 done();
+    //             });
+    //     });
+    // });
 
     // describe('/PUT/:id users', () => {
     //     it('it should UPDATE a book given the id', (done) => {
