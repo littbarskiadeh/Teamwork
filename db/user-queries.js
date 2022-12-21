@@ -120,6 +120,4 @@ module.exports = {
     updateUser,
     deleteUser,
     deleteAllUsers,
-    // login,
-    // logout
 }

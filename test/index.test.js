@@ -12,33 +12,10 @@ let chai = require('chai');
 let chaiHttp = require('chai-http');
 let should = chai.should();
 
+//import personas, sample articles/gifs for test
+const {testAdmin,testEmployee} = require('./resources');
+
 chai.use(chaiHttp);
-
-let testEmployee = {
-    firstname: "Test",
-    lastname: "User",
-    username: "testuser",
-    email: "testuser@mail.com",
-    password: "test",
-    usertype: "2",
-    gender: "male",
-    jobrole: "HR Admin",
-    department: "HR",
-    address: "Maple Street, Toronto"
-}
-
-let testAdmin =  {
-    firstname: "Test",
-    lastname: "Admin",
-    username: "testadmin",
-    email: "testadmin@mail.com",
-    password: "test",
-    usertype: "1",
-    gender: "male",
-    jobrole: "Admin",
-    department: "IT",
-    address: "Maple Street, Toronto"
-}
 
 //Our parent block
 describe('Users', () => {
@@ -59,14 +36,11 @@ describe('Users', () => {
                 .send(testAdmin)
                 .end((err, res) => {
                     
-                    // res.should.have.status(400); //since token is not provided
                     res.body.should.be.a('object');
                     res.body.data.should.have.property('message').eql('User account successfully created');
                     res.body.data.should.have.property('token');
 
-                    testAdmin.token = res.body.data.token;
-                    // console.log('Test Admin token: ', testAdmin.token);
-                    
+                    testAdmin.token = res.body.data.token;                    
                     done();
                 });
         });
@@ -78,13 +52,11 @@ describe('Users', () => {
                 .send(testEmployee)
                 .end((err, res) => {
                     
-                    // res.should.have.status(400); //since token is not provided
                     res.body.should.be.a('object');
                     res.body.data.should.have.property('message').eql('User account successfully created');
                     res.body.data.should.have.property('token');
 
                     testEmployee.token = res.body.data.token;
-                    // console.log('Test employee token: ', testEmployee.token);
                     
                     done();
                 });
