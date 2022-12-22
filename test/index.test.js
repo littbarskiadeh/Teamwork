@@ -13,7 +13,7 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 
 //import personas, sample articles/gifs for test
-const {testAdmin,testEmployee} = require('./resources');
+const {testAdmin, testEmployee, testArticle, testGif, image} = require('./resources');
 
 chai.use(chaiHttp);
 
@@ -24,8 +24,9 @@ describe('Users', () => {
     //     await pool.query('DELETE FROM users WHERE id != 1')
     //     await pool.query("INSERT INTO users (name, email) VALUES ('Joe', 'joe@example.com'), ('Ruby', 'ruby@example.com'), ('Test User', 'testuser.domain@mail.com')")
     // })
+
     after('Delete testuser from DB', async function () {
-        await pool.query('DELETE FROM users WHERE username = $1',[testEmployee.username])
+        await pool.query('DELETE FROM users WHERE username in ($1,$2)',[testEmployee.username, testAdmin.username])
     })
 
     describe('/POST users', () => {
@@ -35,27 +36,23 @@ describe('Users', () => {
                 .post('/auth/create-user')
                 .send(testAdmin)
                 .end((err, res) => {
-                    
                     res.body.should.be.a('object');
                     res.body.data.should.have.property('message').eql('User account successfully created');
                     res.body.data.should.have.property('token');
-
                     testAdmin.token = res.body.data.token;                    
                     done();
                 });
         });
+
         it('admin should Create an employee', (done) => {
-            
             chai.request(app)
                 .post('/auth/create-user')
                 .set('x-access-token',testAdmin.token)
                 .send(testEmployee)
                 .end((err, res) => {
-                    
                     res.body.should.be.a('object');
                     res.body.data.should.have.property('message').eql('User account successfully created');
                     res.body.data.should.have.property('token');
-
                     testEmployee.token = res.body.data.token;
                     
                     done();
@@ -92,16 +89,8 @@ describe('Users', () => {
     //     });
     // });
 
-    /*
-    * Test the /POST route
-    */
-   
-
     // describe('/GET/:id users', () => {
     //     it('it should GET a user by the given id', (done) => {
-
-    //         let user = { id: 1, name: "Unit Test User", email: "mochatest@mail.com" }
-
     //         chai.request(app)
     //             .get('/users/' + user.id)
     //             .end((err, res) => {
