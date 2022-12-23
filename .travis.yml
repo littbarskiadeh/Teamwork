@@ -5,7 +5,9 @@ services:
   - postgresql
 script:
   - npm test
-sudo: false
+
+install:
+  - npm install
  
 branches:
   only:
