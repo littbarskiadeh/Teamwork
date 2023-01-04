@@ -18,7 +18,7 @@ const User = {
         }
         const hashPassword = Helper.hashPassword(req.body.password);
         
-        console.log(`Hashed password: ${hashPassword}`);
+        // console.log(`Hashed password: ${hashPassword}`);
         
         const uuid = uuidv4();
         const values = [
@@ -40,17 +40,17 @@ const User = {
             VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning *`;
 
         try {
-            console.log("Running query: ", createQuery)
+            // console.log("Running query: ", createQuery)
 
             const { rows } = await db.query(createQuery, values);
             const user = rows[0];
 
-            console.log(`Generating token for uuid: ${user.uuid}`)
+            // console.log(`Generating token for uuid: ${user.uuid}`)
 
             const token = Helper.generateToken(user.uuid);
 
             if(token){
-                console.log("Token generated: " + token);
+                console.log(`Token generated`);
                 user.token = token; //send user object with token
             }else{console.log(`Token generation failed. Posting user object`)}
             
@@ -64,7 +64,7 @@ const User = {
             
             return res.status(201).send({ status: "success", data });
         } catch (error) {
-            return res.status(400).send(error.message);
+            return res.status(400).send({ status: "error", data: error.message});
         }
     },
     
@@ -79,7 +79,7 @@ const User = {
         const text = 'SELECT * FROM users WHERE email = $1 OR username = $1';
         const loginQuery = 'UPDATE users SET isloggedin = 1 WHERE email = $1 RETURNING *'
         try {
-            console.log(`Running query: ${text}`)
+            // console.log(`Running query: ${text}`)
             let { rows } = await db.query(text, [req.body.email ]);
             
             if (!rows[0]) {

@@ -8,19 +8,19 @@ const getPosts = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(results.rows)
+        // console.log(results.rows)
         response.status(200).json(results.rows)
     })
 }
 
 const getPostById = async (request, response) => {
-    const id = request.params.id;
+    const id = parseInt(request.params.id);
     
     const commentQuery = 'SELECT * FROM comments WHERE postid=$1';
     const articlesQuery = 'SELECT * FROM posts WHERE type=$1 AND id= $2';
 
     try {
-        console.log(`Running query: ${articlesQuery}`)
+        // console.log(`Running query: ${articlesQuery}`)
 
         let { rows } = await pool.query(articlesQuery, [articleType,id]);
 
@@ -29,16 +29,16 @@ const getPostById = async (request, response) => {
         }
 
         let articles = rows;
-        console.log(`Articles Count ===>> ${articles.length}`)
+        // console.log(`Articles Count ===>> ${articles.length}`)
 
         //get comments
-        console.log(`Running query: ${commentQuery}`)
+        // console.log(`Running query: ${commentQuery}`)
         let comments = await pool.query(commentQuery, [id]);
         
-        console.log(`Comments: ${comments}`)
+        // console.log(`Comments: ${comments}`)
 
         comments = comments.rows;
-        console.log(`Comments Count ===>> ${comments.length}`)
+        // console.log(`Comments Count ===>> ${comments.length}`)
 
         //Get required fields for each comment
         function getCommentsData(comm) {
@@ -50,7 +50,8 @@ const getPostById = async (request, response) => {
         function getArticleData(article) {
             return { id: article.id, createdon: article.createddate, title: article.title, "article": article.description, authorId: article.ownerid, comments:postComments };
         }
-        const data = articles.map(getArticleData)
+        let data = articles.map(getArticleData)
+        data = data[0]
 
         console.log(`Returning article with id ${id}`)
         response.status(201).send({ status: "success", data })        
@@ -81,7 +82,7 @@ const createPost = (request, response) => {
                 title: result.title,
                 ownerID: result.ownerid
             }
-            console.log(`Post added:${result}`)
+            console.log(`Post added`)
             response.status(201).send({ status: "success", data })
         })
 }

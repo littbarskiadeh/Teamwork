@@ -36,11 +36,15 @@ let testGif =  {
     "file":image
 }
 
+let testComment = {
+    "comment":"This is a comment from Unit testing!"
+}
 
 module.exports = {
     testAdmin,
     testEmployee,
     testArticle,
     testGif,
+    testComment,
     image
 }

@@ -15,13 +15,13 @@ const Auth = {
         }
         
         try {
-            console.log(`Verifying user token: ${token}`);
+            console.log(`Verifying user token`);
 
             const decoded = await jwt.verify(token, process.env.SECRET);
             
             // Object.keys(decoded).forEach((value )=>console.log(value))
 
-            console.log(`decoded user token: ${decoded.uuid}`);
+            // console.log(`decoded user token: ${decoded.uuid}`);
 
             const text = 'SELECT * FROM users WHERE uuid = $1';
 
@@ -32,7 +32,7 @@ const Auth = {
 
             req.user = { usertype: rows[0].usertype, uuid: decoded.uuid };
 
-            console.log(`Request user: ${req.user}`)
+            // console.log(`Request user: ${req.user}`)
 
             next();
         } catch (error) {
