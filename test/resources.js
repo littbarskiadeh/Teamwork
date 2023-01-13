@@ -13,7 +13,7 @@ let testEmployee = {
     address: "Maple Street, Toronto"
 }
 
-let testAdmin =  {
+let testAdmin = {
     firstname: "Test",
     lastname: "Admin",
     username: "testadmin",
@@ -26,18 +26,24 @@ let testAdmin =  {
     address: "Maple Street, Toronto"
 }
 
-let testArticle =  {
-    "title":"Lorem ipsum dolor amet sit",
-    "article":"Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis arum quisquam eius sed odit fugiat iusto fuga praesentiumoptio, eaque rerum! Provident similique accusantium nemo autem. Veritatisobcaecati tenetur iure eius earum ut molestias architecto voluptate aliquamnihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit,tenetur error, harum nesciunt ipsum debitis quas aliquid. Reprehenderit,quia. Quo neque error repudiandae fuga? Ipsa laudantium molestias eos"
+let testArticle = {
+    "title": "Lorem ipsum dolor amet sit",
+    "article": "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis arum quisquam eius sed odit fugiat iusto fuga praesentiumoptio, eaque rerum! Provident similique accusantium nemo autem. Veritatisobcaecati tenetur iure eius earum ut molestias architecto voluptate aliquamnihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit,tenetur error, harum nesciunt ipsum debitis quas aliquid. Reprehenderit,quia. Quo neque error repudiandae fuga? Ipsa laudantium molestias eos"
 }
 
-let testGif =  {
-    "title":"Lorem ipsum Image",
-    "file":image
+let testGif = {
+    "title": "Lorem ipsum Image",
+    "file": image
 }
 
 let testComment = {
-    "comment":"This is a comment from Unit testing!"
+    "comment": "This is a comment from Unit testing!"
+}
+
+let testArticleUpdate = {
+
+    title: "Test Title",
+    article: "Test Article, Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis arum quisquam eius se"
 }
 
 module.exports = {
@@ -46,5 +52,6 @@ module.exports = {
     testArticle,
     testGif,
     testComment,
+    testArticleUpdate,
     image
 }

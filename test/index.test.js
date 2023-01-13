@@ -4,8 +4,8 @@ const pool = conn.pool;
 
 var moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
-const uuid = uuidv4();
-const auth = require('../db/auth-queries');
+// const uuid = uuidv4();
+// const auth = require('../db/auth-queries');
 
 //Require the dev-dependencies
 let chai = require('chai');
@@ -13,7 +13,10 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 
 //import personas, sample articles/gifs for test
-const { testAdmin, testEmployee, testArticle, testGif, image, testComment } = require('./resources');
+const { testAdmin, testEmployee, testArticle, testGif, image, testComment,testArticleUpdate } = require('./resources');
+var fs = require('fs'),
+    path = require('path'),  
+            filePath = path.join(__dirname, image);
 
 chai.use(chaiHttp);
 
@@ -164,7 +167,7 @@ describe('Users', () => {
             chai.request(app)
                 .patch(`/articles/${testArticle.articleId}`)
                 .set('x-access-token', testEmployee.token)
-                .send({ title: "Test Title", article: "Test Article, Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis arum quisquam eius se" })
+                .send(testArticleUpdate)
                 .end((err, res) => {
                     res.body.should.be.a('object');
                     // console.debug(res.body);
@@ -174,6 +177,70 @@ describe('Users', () => {
                     done();
                 });
         });
+
+    });
+
+    describe('Test GIF routes', () => {
+        it('it should let an employee Create a GIF post', (done) => {
+
+            chai.request(app)
+                .post('/gifs/')
+                .set('Content-Type', 'multipart/form-data')
+                .set('x-access-token', testEmployee.token)
+                .field('file', testGif.file)
+                .field('title', testGif.title)
+                .attach('file',filePath)
+                .end((err, res) => {
+                    res.body.should.be.a('object');
+
+                    res.body.data.should.have.property('message').eql('GIF image successfully posted');
+                    res.body.data.should.have.property('ownerID').eql(testEmployee.uuid);
+                    res.body.data.should.have.property('title').eql(testGif.title);
+
+                    // console.debug(res.body.data)
+                    //Set fields for Gif object
+                    testGif.gifID = res.body.data.gifID;
+                    testGif.createdOn = res.body.data.createdOn;
+                    testGif.ownerID = res.body.data.ownerID;
+
+                    console.debug(testGif)
+                    done();
+                });
+        });
+
+        it('it should let an employee add a comment to a GIF', (done) => {
+            chai.request(app)
+                .post(`/gifs/${testGif.gifID}/comment`)
+                .set('x-access-token', testEmployee.token)
+                .send(testComment)
+                .end((err, res) => {
+                    res.body.should.be.a('object');
+                    
+                    console.debug(res.body.data)
+                    
+                    res.body.data.should.have.property('message').eql('comment successfully added');
+                    res.body.data.should.have.property('commentBy').eql(testEmployee.uuid);
+
+                    done();
+                });
+        });
+
+        it('it should get a GIF by the gifId', (done) => {
+            
+            chai.request(app)
+                .get(`/gifs/${testGif.gifID}`)
+                .set('x-access-token', testEmployee.token)
+                .end((err, res) => {
+                    res.body.should.be.a('object');
+                    console.debug(res.body.data)
+                    // res.body.should.have.property('status').eql('success');
+                    // res.body.data.should.have.property('authorId').eql(testGif.ownerID);
+                    // res.body.data.should.have.property('title').eql(testGif.title);
+
+                    done();
+                });
+        });
+
 
     });
 

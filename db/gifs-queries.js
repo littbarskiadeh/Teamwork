@@ -30,10 +30,10 @@ const getGifs = (request, response) => {
 }
 
 const getGifById = async (request, response) => {
-    const id = request.params.id;
-    
+    const id = parseInt(request.params.id);
+    // gifType = parseInt(gifType)
     const commentQuery = 'SELECT * FROM comments WHERE postid=$1';
-    const gifsQuery = 'SELECT * FROM posts WHERE type=$1 AND id= $2';
+    const gifsQuery = 'SELECT * FROM posts WHERE type=$1 AND id=$2';
 
     try {
         console.log(`Running query: ${gifsQuery}`)
@@ -63,12 +63,12 @@ const getGifById = async (request, response) => {
 
         //for each article, attach comments
         function getGIFData(gif) {
-            return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:postComments };
+            return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:JSON.stringify(postComments) };
         }
         const data = gifs.map(getGIFData)
 
         console.log(`Returning article with id ${id}`)
-        response.status(201).send({ status: "success", data })        
+        response.status(201).send({ status: "success", data:data[0] })        
     }
     catch (error) {
         console.log(`Error: ${error}`)
@@ -82,14 +82,13 @@ const createGif = (request, response) => {
     let imageURL = request.file.path;
     const ownerId = request.user.uuid;
     
-    console.log('Creating new GIF for user with id ' + ownerId)
+    console.log(`Creating new GIF for user with id ${ownerId}`)
 
     cloudinary.uploader.upload(imageURL, (error, result) => {
         console.log(`Uploading GIF with title: ${title}`);
 
         if (!error) {
-            console.log("GIF uploaded ");
-            console.log(result)
+            console.log(`GIF uploaded to Cloudinary, URL - ${result.url}`);
 
             imageURL = result.url;
 
@@ -100,9 +99,8 @@ const createGif = (request, response) => {
                     }
                     let result = results.rows[0] ? results.rows[0] : {};
 
-                    console.log(`\nA new GIF has been added. URL: ${result.image}`)
-                    // console.log(`A new GIF has been added. URL - ${result.secure_url}`)
-                    
+                    console.log(`\nA new GIF has been added. URL: ${result.description}`)
+                    // console.log('GIF ID' + result.id)
                     let data= {
                         message: `GIF image successfully posted`,
                         gifID: result.id,
@@ -126,6 +124,15 @@ const addComment = (request, response) => {
     console.log('Adding new comment from employee with id ' + commenterId)
     console.log('Adding new comment ' + comment)
 
+    const gifsQuery = 'SELECT * FROM posts WHERE id=$1';
+    // console.log(`Running query: ${gifsQuery}`)
+    let gif={}
+
+    pool.query(gifsQuery, [gifId], (err, results) => {
+        let result = results.rows[0] ;
+        gif.title = result.title;
+    });
+
     pool.query('INSERT INTO comments (comment, postid, commenterid, createddate)  VALUES ($1, $2, $3,now()) RETURNING *',
         [comment, gifId, commenterId], (error, results) => {
             if (error) {
@@ -136,7 +143,7 @@ const addComment = (request, response) => {
             let data = {
                 message: `comment successfully added`,
                 createdOn: result.createddate.toLocaleString(),
-                gifTitle: result.title,
+                gifTitle: gif.title,
                 comment,
                 commentBy: commenterId
             }
