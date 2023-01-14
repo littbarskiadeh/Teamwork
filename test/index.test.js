@@ -4,8 +4,6 @@ const pool = conn.pool;
 
 var moment = require('moment');
 const { v4: uuidv4 } = require('uuid');
-// const uuid = uuidv4();
-// const auth = require('../db/auth-queries');
 
 //Require the dev-dependencies
 let chai = require('chai');
@@ -13,14 +11,14 @@ let chaiHttp = require('chai-http');
 let should = chai.should();
 
 //import personas, sample articles/gifs for test
-const { testAdmin, testEmployee, testArticle, testGif, image, testComment,testArticleUpdate } = require('./resources');
+const { testAdmin, testEmployee, testEmployee2, testArticle, testGif, image, fakeToken, testComment, testArticleUpdate } = require('./resources');
 var fs = require('fs'),
-    path = require('path'),  
-            filePath = path.join(__dirname, image);
+    path = require('path'),
+    filePath = path.join(__dirname, image);
 
 chai.use(chaiHttp);
 
-//Our parent block
+// parent block
 describe('Users', () => {
     // before('Insert fake data', async function () {
     //     await pool.query('DELETE FROM users WHERE id != 1')
@@ -28,7 +26,9 @@ describe('Users', () => {
     // })
 
     after('Delete testusers from DB', async function () {
-        await pool.query('DELETE FROM users WHERE username in ($1,$2)', [testEmployee.username, testAdmin.username])
+        await pool.query('DELETE FROM users WHERE username in ($1,$2,$3)', [testEmployee.username, testAdmin.username, testEmployee2.username]);
+        await pool.query('DELETE FROM posts WHERE title in ($1,$2)', [testArticle.title,testGif.title]);
+        await pool.query('DELETE FROM comments WHERE comment=$1', [testComment.comment]);
     })
 
     describe('Test User routes (POST, GET)', () => {
@@ -42,6 +42,7 @@ describe('Users', () => {
                     res.body.data.should.have.property('message').eql('User account successfully created');
                     res.body.data.should.have.property('token');
                     testAdmin.token = res.body.data.token;
+
                     done();
                 });
         });
@@ -63,13 +64,13 @@ describe('Users', () => {
                 });
         });
 
-        it('non-admin should NOT Create an employee', (done) => {
+        it('Employee(non-admin) should NOT Create an employee', (done) => {
             chai.request(app)
                 .post('/auth/create-user')
                 .set('x-access-token', testEmployee.token)
                 .send(testEmployee)
                 .end((err, res) => {
-                    console.debug(res.body)
+                    // console.debug(res.body)
                     res.body.should.be.a('object');
                     res.body.should.have.property('message').eql('User is not an admin');
 
@@ -189,21 +190,18 @@ describe('Users', () => {
                 .set('x-access-token', testEmployee.token)
                 .field('file', testGif.file)
                 .field('title', testGif.title)
-                .attach('file',filePath)
+                .attach('file', filePath)
                 .end((err, res) => {
                     res.body.should.be.a('object');
-
                     res.body.data.should.have.property('message').eql('GIF image successfully posted');
                     res.body.data.should.have.property('ownerID').eql(testEmployee.uuid);
                     res.body.data.should.have.property('title').eql(testGif.title);
 
-                    // console.debug(res.body.data)
                     //Set fields for Gif object
                     testGif.gifID = res.body.data.gifID;
                     testGif.createdOn = res.body.data.createdOn;
                     testGif.ownerID = res.body.data.ownerID;
 
-                    console.debug(testGif)
                     done();
                 });
         });
@@ -214,10 +212,8 @@ describe('Users', () => {
                 .set('x-access-token', testEmployee.token)
                 .send(testComment)
                 .end((err, res) => {
+
                     res.body.should.be.a('object');
-                    
-                    console.debug(res.body.data)
-                    
                     res.body.data.should.have.property('message').eql('comment successfully added');
                     res.body.data.should.have.property('commentBy').eql(testEmployee.uuid);
 
@@ -226,21 +222,84 @@ describe('Users', () => {
         });
 
         it('it should get a GIF by the gifId', (done) => {
-            
+
             chai.request(app)
                 .get(`/gifs/${testGif.gifID}`)
                 .set('x-access-token', testEmployee.token)
                 .end((err, res) => {
                     res.body.should.be.a('object');
-                    console.debug(res.body.data)
-                    // res.body.should.have.property('status').eql('success');
-                    // res.body.data.should.have.property('authorId').eql(testGif.ownerID);
-                    // res.body.data.should.have.property('title').eql(testGif.title);
+                    res.body.data.should.have.property('id').eql(testGif.gifID);
+                    res.body.data.should.have.property('title').eql(testGif.title);
 
                     done();
                 });
         });
 
+        it('it should GET all the GIFs', (done) => {
+            chai.request(app)
+                .get('/gifs')
+                .set('x-access-token', testEmployee.token)
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    res.body.should.be.a('array');
+                    res.body.length.should.be.least(1);
+                    done();
+                });
+        });
+
+        it('it should NOT get all the GIFs. No token passed', (done) => {
+            chai.request(app)
+                .get('/gifs')
+                .end((err, res) => {
+
+                    res.body.should.have.property('message').eql('Token is not provided');
+
+                    done();
+                });
+        });
+
+        it('it should NOT DELETE a GIF by the gifId. No token passed', (done) => {
+            chai.request(app)
+                .delete(`/gifs/${testGif.gifID}`)
+                .end((err, res) => {
+
+                    res.body.should.have.property('message').eql('Token is not provided');
+
+                    done();
+                });
+        });
+
+        it('it should NOT DELETE a GIF by the gifId. Wrong token passed', (done) => {
+
+            testEmployee2.token = fakeToken;
+
+            chai.request(app)
+                .delete(`/gifs/${testGif.gifID}`)
+                .set('x-access-token', testEmployee2.token)
+                .end((err, res) => {
+
+                    // console.debug(res.body);
+                    res.body.should.have.property('message').not.eql('success');
+                    res.body.should.have.property('name').eql('JsonWebTokenError');
+
+                    done();
+                });
+        });
+
+        it('it should DELETE a GIF by the gifId', (done) => {
+
+            chai.request(app)
+                .delete(`/gifs/${testGif.gifID}`)
+                .set('x-access-token', testEmployee.token)
+                .end((err, res) => {
+
+                    res.body.should.be.a('object');
+                    res.body.should.have.property('status').eql('success');
+                    res.body.data.should.have.property('message').eql('gif post successfully deleted');
+
+                    done();
+                });
+        });
 
     });
 

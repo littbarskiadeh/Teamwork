@@ -24,19 +24,18 @@ const getGifs = (request, response) => {
         if (error) {
             throw error
         }
-        console.log(results.rows)
+        // console.log(results.rows)
         response.status(200).json(results.rows)
     })
 }
 
 const getGifById = async (request, response) => {
     const id = parseInt(request.params.id);
-    // gifType = parseInt(gifType)
     const commentQuery = 'SELECT * FROM comments WHERE postid=$1';
     const gifsQuery = 'SELECT * FROM posts WHERE type=$1 AND id=$2';
 
     try {
-        console.log(`Running query: ${gifsQuery}`)
+        // console.log(`Running query: ${gifsQuery}`)
 
         let { rows } = await pool.query(gifsQuery, [gifType,id]);
 
@@ -47,13 +46,13 @@ const getGifById = async (request, response) => {
         let gifs = rows;
 
         //get comments
-        console.log(`Running query: ${commentQuery}`)
+        // console.log(`Running query: ${commentQuery}`)
         let comments = await pool.query(commentQuery, [id]);
         
-        console.log(`Comments: ${comments}`)
+        // console.log(`Comments: ${comments}`)
 
         comments = comments.rows;
-        console.log(`Comments Count ===>> ${comments.length}`)
+        // console.log(`Comments Count ===>> ${comments.length}`)
 
         //Get required fields for each comment
         function getCommentsData(comm) {
@@ -122,7 +121,7 @@ const addComment = (request, response) => {
     const commenterId = request.user.uuid;
 
     console.log('Adding new comment from employee with id ' + commenterId)
-    console.log('Adding new comment ' + comment)
+    // console.log('Adding new comment ' + comment)
 
     const gifsQuery = 'SELECT * FROM posts WHERE id=$1';
     // console.log(`Running query: ${gifsQuery}`)
@@ -148,7 +147,7 @@ const addComment = (request, response) => {
                 commentBy: commenterId
             }
 
-            console.log(`Comment added, ${comment}`)
+            // console.log(`Comment added, ${comment}`)
             response.status(201).send({ status: "success", data })
             
         })

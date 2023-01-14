@@ -6,19 +6,19 @@ require('dotenv').config()
 
 
 const Auth = {
-   
+
     async verifyToken(req, res, next) {
         const token = req.headers['x-access-token'];
 
         if (!token) {
             return res.status(400).send({ 'message': 'Token is not provided' });
         }
-        
+
         try {
             console.log(`Verifying user token`);
 
             const decoded = await jwt.verify(token, process.env.SECRET);
-            
+
             // Object.keys(decoded).forEach((value )=>console.log(value))
 
             // console.log(`decoded user token: ${decoded.uuid}`);
@@ -89,7 +89,6 @@ const Auth = {
         let userID = req.user.uuid; //req.user.id is set by the VerifyToken function
         let currentUserType = req.user.usertype;
 
-        console.log('isPostOwner', req.user)
         try {
             if (currentUserType == 1) { return next(); } //Allow If user is admin
 
@@ -99,6 +98,7 @@ const Auth = {
             if (!rows[0]) {
                 return res.status(400).send({ 'message': 'User does not own this post' });
             }
+            // console.log(`${req.user} is the post owner`)
 
             next();
         } catch (error) {

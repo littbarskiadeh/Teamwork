@@ -13,6 +13,19 @@ let testEmployee = {
     address: "Maple Street, Toronto"
 }
 
+let testEmployee2 = {
+    firstname: "Test2",
+    lastname: "User2",
+    username: "testuser2",
+    email: "testuser2@mail.com",
+    password: "test2",
+    usertype: "2",
+    gender: "female",
+    jobrole: "HR",
+    department: "HR",
+    address: "Maple Street, Toronto"
+}
+
 let testAdmin = {
     firstname: "Test",
     lastname: "Admin",
@@ -46,12 +59,16 @@ let testArticleUpdate = {
     article: "Test Article, Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia,molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborumnumquam blanditiis arum quisquam eius se"
 }
 
+let fakeToken = 'eyJhbRciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiZjJjZTNkY2EtNjQwMi00MjViLTk3OTYtY2UwMjg1NjdjOWE0IiwiaWF0IjoxNjcwMjk1Njg0LCJleHAiOjE2NzA5MDA0ODR9.FD02UCwAOvUCvuIAwv9LdTTzMxo5F7g_1IuEiB3qnYU';
+
 module.exports = {
     testAdmin,
     testEmployee,
+    testEmployee2,
     testArticle,
     testGif,
     testComment,
     testArticleUpdate,
-    image
+    image,
+    fakeToken
 }
