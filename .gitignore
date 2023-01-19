@@ -2,3 +2,5 @@
 temp_index.js
 cloudinary.js
 .env
+.nyc_output/
+coverage/
