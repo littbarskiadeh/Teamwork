@@ -4,12 +4,15 @@ const pool = conn.pool;
 const articleType = '1';//Type field in db for article
 
 const getPosts = (request, response) => {
-    pool.query('SELECT * FROM posts WHERE type=$1 ORDER BY createddate DESC', ['1'], (error, results) => {
+    pool.query('SELECT * FROM posts WHERE type=$1 ORDER BY createddate DESC', [articleType], (error, results) => {
         if (error) {
             throw error
         }
-        // console.log(results.rows)
-        response.status(200).json(results.rows)
+
+        let data = results.rows;
+
+        console.log(`returning articles ===>> \n${typeof(data)}`)
+        response.status(201).send({ status: "success", data: data })
     })
 }
 
@@ -168,12 +171,14 @@ const getFeed = (request, response) => {
         // let result = results.rows[0] ? results.rows[0] : {};
 
         function getData(post) {
-            return { id: post.id, createdon: post.createddate, title: post.title, "article/url": post.description, authorId: post.ownerid };
+            return { id: post.id, createdon: post.createddate, title: post.title, description: post.description, authorId: post.ownerid, type: post.type };
         }
 
         let data = results.rows.map(getData)
+        
+        console.log(`returning feed`);
+        console.log(data);
 
-        console.log(`returning feed`)
         response.status(201).send({ status: "success", data })
     })
 }
