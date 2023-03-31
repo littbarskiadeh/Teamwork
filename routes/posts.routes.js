@@ -12,7 +12,7 @@ router.route('/').get(Auth.verifyToken, db.getPosts)
 router.route('/:id').get(Auth.verifyToken,db.getPostById)
 
 router.route('/:id/comment').post(Auth.verifyToken, db.addComment)
-router.route('/').post(Auth.verifyToken, db.createPost)
+router.route('/create').post(Auth.verifyToken, db.createPost)
 
 // router.route('/:id').put( db.getFeed)
 

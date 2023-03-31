@@ -9,6 +9,8 @@ const Auth = {
 
     async verifyToken(req, res, next) {
         const token = req.headers['x-access-token'];
+        
+        console.log(`Backend token1: ${token}`)
 
         if (!token) {
             return res.status(400).send({ 'message': 'Token is not provided' });
@@ -16,23 +18,26 @@ const Auth = {
 
         try {
             console.log(`Verifying user token`);
-
+            
             const decoded = await jwt.verify(token, process.env.SECRET);
 
             // Object.keys(decoded).forEach((value )=>console.log(value))
 
-            // console.log(`decoded user token: ${decoded.uuid}`);
+            console.log(`decoded user token: ${decoded.uuid}`);
 
             const text = 'SELECT * FROM users WHERE uuid = $1';
 
             const { rows } = await db.query(text, [decoded.uuid]);
+            console.log(rows[0]);
+            
             if (!rows[0]) {
                 return res.status(400).send({ 'message': 'The token you provided is invalid' });
             }
 
-            req.user = { usertype: rows[0].usertype, uuid: decoded.uuid };
-
-            // console.log(`Request user: ${req.user}`)
+            req.user = { ...req.user ,usertype: rows[0].usertype, uuid: rows[0].uuid };
+            
+            console.log(`Request user: ${req.user.uuid}`)
+            // console.log(`Request user: ${JSON.parse(req.user)}`)
 
             next();
         } catch (error) {

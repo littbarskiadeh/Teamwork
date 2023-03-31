@@ -1,11 +1,11 @@
 {
-  "name": "api-postgres",
+  "name": "teamwork",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test":"mocha",
+    "test": "mocha",
     "test-with-coverage": "nyc --all --reporter=html mocha"
   },
   "keywords": [],
@@ -29,5 +29,4 @@
   "devDependencies": {
     "nyc": "^15.1.0"
   }
-
 }

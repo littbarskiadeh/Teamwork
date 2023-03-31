@@ -24,8 +24,11 @@ const getGifs = (request, response) => {
         if (error) {
             throw error
         }
-        // console.log(results.rows)
-        response.status(200).json(results.rows)
+        let data = results.rows;
+
+        // console.log(`returning gifs ===>> \n${data}`)
+        response.status(201).send({ status: "success", data: data })
+      
     })
 }
 
@@ -60,14 +63,17 @@ const getGifById = async (request, response) => {
         }
         const postComments = comments.map(getCommentsData)
 
-        //for each article, attach comments
+        //for each gif, attach comments
         function getGIFData(gif) {
-            return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:JSON.stringify(postComments) };
-        }
-        const data = gifs.map(getGIFData)
+            return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:postComments};
+            // return { id: gif.id, createdon: gif.createddate, title: gif.title, url: gif.description, authorId: gif.ownerid, comments:JSON.stringify(postComments) };
 
-        console.log(`Returning article with id ${id}`)
-        response.status(201).send({ status: "success", data:data[0] })        
+        }
+        let data = gifs.map(getGIFData)
+        data = data[0]//added 08/03/'23
+
+        console.log(`Returning gif with id ${id}`)
+        response.status(201).send({ status: "success", data:data })        
     }
     catch (error) {
         console.log(`Error: ${error}`)

@@ -1,0 +1,9 @@
+{
+    "all": true,
+    "exclude": ["node_modules"],
+    "output": "reports",
+    "reporter" : [
+        "html",
+        "text"
+    ]
+}
