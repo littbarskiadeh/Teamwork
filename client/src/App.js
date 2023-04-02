@@ -13,6 +13,7 @@ import AddArticlePage from './pages/AddArticlePage';
 import GifsList from './components/GifsList';
 import GifPage from './pages/GifPage';
 import DeleteGif from './pages/DeleteGif';
+import Dashboard from './pages/Dashboard';
 
 function App() {
   return (
@@ -22,6 +23,8 @@ function App() {
         <div style={{ flex: 1, padding: "1rem" }}>
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+
             <Route path="/signin" element={<SignIn />} />
             <Route path="/create" element={<CreateAccount />} />
             <Route path="/createGIF" element={<CreateGIF />} />

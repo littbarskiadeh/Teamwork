@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { UserContext } from '../hooks/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 import { TextField, Button, Box } from '@material-ui/core';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-// import { object, string } from '@hapi/joi';
 import Joi from '@hapi/joi';
 
 const baseURL = 'http://localhost:8080'
@@ -15,12 +17,20 @@ const signInSchema = Joi.object({
 });
 
 function SignIn() {
+    const userContext = useContext(UserContext);
+
+    const setUser = (user) => { 
+        console.log(`setting user Context ${user.id}`)
+        userContext.setUser(user); 
+    };
+
     const [formData, setFormData] = useState({
         email: '',
         password: ''
     });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = event => {
         const { name, value } = event.target;
@@ -52,24 +62,29 @@ function SignIn() {
                 body: JSON.stringify(formData)
             });
 
-            const data = await response.json();
+            const {data} = await response.json();
 
             if (!response.ok) {
                 setErrors({ form: data.message });
                 toast.error('Error occured.', { autoClose: 5000 });
 
-                setIsSubmitting(false); 
+                setIsSubmitting(false);
 
                 return;
             }
 
             // Handle successful sign in, e.g. redirect to dashboard, save token in local storage
-            localStorage.setItem('token', data.data.token);
-            toast.success('Signin successful!', { autoClose: 4000 });
+            localStorage.setItem('token', data.token);
+            localStorage.setItem('userType', data.userType); //Consider setting whole user value sent from API
 
-            console.log(data)
+            // Update the user context with the signed-in user information
+            setUser(data.user);
+
+            console.log(data.user)
             console.log('Token: ' + localStorage.getItem('token'));
             // ...
+            navigate('/dashboard');
+
         } catch (err) {
             console.error(err);
             setErrors({ form: 'An error occurred. Please try again later.' });
@@ -79,8 +94,8 @@ function SignIn() {
     };
 
     return (
-        
-        <Box p={3}  alignItems="center" justifyContent="center" margin={5}>
+
+        <Box p={3} alignItems="center" justifyContent="center" margin={5}>
             <div>
                 <h1>Login</h1>
             </div>

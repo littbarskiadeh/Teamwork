@@ -48,7 +48,6 @@ function AddArticlePage() {
                 headers: {
                     'Content-Type': 'application/json',
                     'x-access-token': localStorage.getItem('token')
-                    // 'x-access-token': "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiZDljY2FlNzAtODNmZC00ZWViLTgxZGItNzQ2MWM3YWY4MDQ4IiwiaWF0IjoxNjc0NDE2ODI2LCJleHAiOjE2NzUwMjE2MjZ9.ybR7sQkucj8PIls9MHki9aia8tIATFcGtBmXwuwXbJM"
                 },
                 body: JSON.stringify(formData)
             });
