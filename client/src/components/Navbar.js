@@ -25,8 +25,7 @@ function Navbar() {
                         <>
                             <li className="navbar-item">
                                 <NavLink
-                                    exact='true'
-                                    to="/"
+                                    to="/home"
                                     className={({ isActive, isPending }) =>
                                         isActive ? 'active-link navlink' : 'navlink'
                                     }
@@ -75,6 +74,16 @@ function Navbar() {
                                     Dashboard
                                 </NavLink>
                             </li>
+                            <li className="navbar-item">
+                                <NavLink
+                                    to="/feed"
+                                    className={({ isActive, isPending }) =>
+                                        isActive ? 'active-link navlink' : 'navlink'
+                                    }
+                                >
+                                    Feed
+                                </NavLink>
+                            </li>
                         </>
                     )}
 
@@ -105,16 +114,7 @@ function Navbar() {
                         </li>
                     )}
 
-                    <li className="navbar-item">
-                        <NavLink
-                            to="/feed"
-                            className={({ isActive, isPending }) =>
-                                isActive ? 'active-link navlink' : 'navlink'
-                            }
-                        >
-                            Feed
-                        </NavLink>
-                    </li>
+
 
                     {/* isloggedin */}
 

@@ -23,13 +23,6 @@
     align-items: center;
     margin-top: 10px;
   }
-  
-  .navbar__link {
-    padding: 10px;
-    margin: 0 10px;
-    color: #fff;
-    text-decoration: none;
-  }
 
   .navbar-list {
     padding: 2em;

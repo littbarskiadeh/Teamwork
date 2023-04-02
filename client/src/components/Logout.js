@@ -11,7 +11,7 @@ function Logout() {
 
     const handleLogout = async (request, response) => {
         try {
-            const response = await fetch(`${baseURL}/auth/signin`, {
+            const response = await fetch(`${baseURL}/auth/logout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ 
@@ -26,7 +26,7 @@ function Logout() {
             
             localStorage.removeItem('token');
             localStorage.removeItem('userType');
-
+//Update user context
             userContext.setUser(null);
             navigate('/');
 

@@ -22,7 +22,8 @@ function App() {
         <Navbar />
         <div style={{ flex: 1, padding: "1rem" }}>
           <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={<SignIn />} />
+            <Route path="/home" element={<HomePage />} />
             <Route path="/dashboard" element={<Dashboard />} />
 
             <Route path="/signin" element={<SignIn />} />
