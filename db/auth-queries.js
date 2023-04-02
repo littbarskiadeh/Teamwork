@@ -101,7 +101,9 @@ const User = {
             let data = {
                 token: user.token,
                 userId: user.id,
-                uuid: user.uuid
+                uuid: user.uuid,
+                userType: user.usertype,
+                user: user
             }
             return res.status(200).send({ status: "success", data: data });
         } catch (error) {

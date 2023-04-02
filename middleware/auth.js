@@ -101,9 +101,9 @@ const Auth = {
             const { rows } = await db.query(text, [userID]);
 
             if (!rows[0]) {
-                return res.status(400).send({ 'message': 'User does not own this post' });
+                return res.status(400).send({ 'message': `User does not own this post. ${req.user} is the post owner` });
             }
-            // console.log(`${req.user} is the post owner`)
+            console.log(`${req.user} is the post owner`)
 
             next();
         } catch (error) {
