@@ -28,7 +28,7 @@ function Logout() {
             localStorage.removeItem('userType');
 
             userContext.setUser(null);
-            navigate('/signin');
+            navigate('/');
 
         } catch (err) {
 

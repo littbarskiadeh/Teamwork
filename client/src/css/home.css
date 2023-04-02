@@ -5,6 +5,12 @@
     align-items: center;
     padding: 20px;
   }
+
+  .home-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around; 
+  }
   
   .homepage__heading {
     font-size: 36px;

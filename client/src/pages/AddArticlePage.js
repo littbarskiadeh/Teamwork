@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Box, Button} from '@material-ui/core';
+import { useNavigate } from 'react-router-dom';
 
 import Joi from '@hapi/joi';
 const baseURL = 'http://localhost:8080'
@@ -17,10 +18,17 @@ function AddArticlePage() {
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+    const navigate = useNavigate();
+
+
     const handleChange = event => {
         const { name, value } = event.target;
         setFormData({ ...formData, [name]: value });
     };
+
+    const handleCancel = (event) => {
+        navigate(0);
+    }
 
     const handleSubmit = async (event) => {
 
@@ -108,7 +116,7 @@ function AddArticlePage() {
                     >
                         Create Article
                     </Button>
-                    <Button variant="contained" color="secondary" style={{ margin: '5px 5px' }} >
+                <Button variant="contained" color="secondary" onClick={handleCancel} style={{ margin: '5px 5px' }} >
                         Cancel
                     </Button>
                 </Box>
