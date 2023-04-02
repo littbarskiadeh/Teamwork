@@ -7,9 +7,10 @@ function Dashboard() {
 
   return (
     <div>
-      <Logout />
+      {/* <Logout /> */}
 
       <h1>Welcome, {userContext.user.email}!</h1>
+      <span>Your username is <strong>{userContext.user.username},</strong> have a nice day at work today!</span>
     </div>
   );
 }

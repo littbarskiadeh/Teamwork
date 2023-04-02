@@ -12,10 +12,12 @@ function Navbar() {
     const userContext = useContext(UserContext);
 
     return (
-        <div className="nav-container" style={{display:'flex', flexDirection:'column'}}>
+        <div className="nav-container" style={{ display: 'flex', flexDirection: 'column' }}>
             <nav className="navbar">
 
-                <Avatar alt={userContext.user.firstname} src="/broken-image.jpg" />
+                {userContext.user && (
+                    <Avatar alt={userContext.user.firstname} src="/broken-image.jpg" />
+                )}
 
                 <ul className="navbar-list">
                     <li className="navbar-item">
@@ -39,7 +41,7 @@ function Navbar() {
                             Sign In
                         </NavLink>
                     </li>
-                    {userContext.user.userType === '1' && (
+                    {userContext.user && userContext.user.usertype === '1' && (
                         <li className="navbar-item">
                             <NavLink
                                 to="/create"
@@ -52,16 +54,6 @@ function Navbar() {
                         </li>
                     )}
 
-                    <li className="navbar-item">
-                        <NavLink
-                            to="/createGIF"
-                            className={({ isActive, isPending }) =>
-                                isActive ? 'active-link navlink' : 'navlink'
-                            }
-                        >
-                            Create GIF
-                        </NavLink>
-                    </li>
                     <li className="navbar-item">
                         <NavLink
                             to="/feed"
@@ -92,21 +84,36 @@ function Navbar() {
                             GIFs
                         </NavLink>
                     </li>
-                    <li className="navbar-item">
-                        <NavLink
-                            exact='true'
-                            to="/dashboard"
-                            className={({ isActive, isPending }) =>
-                                isActive ? 'active-link navlink' : 'navlink'
-                            }
-                        >
-                            Dashboard
-                        </NavLink>
-                    </li>
+                    {/* isloggedin */}
+                    {userContext.user && userContext.user.isloggedin === '1' && (
+                        <>
+                            <li className="navbar-item">
+                                <NavLink
+                                    to="/createGIF"
+                                    className={({ isActive, isPending }) =>
+                                        isActive ? 'active-link navlink' : 'navlink'
+                                    }
+                                >
+                                    Create GIF
+                                </NavLink>
+                            </li>
+                            <li className="navbar-item">
+                                <NavLink
+                                    exact='true'
+                                    to="/dashboard"
+                                    className={({ isActive, isPending }) =>
+                                        isActive ? 'active-link navlink' : 'navlink'
+                                    }
+                                >
+                                    Dashboard
+                                </NavLink>
+                            </li>
+                        </>
+                    )}
                 </ul>
             </nav>
 
-            <Logout/>
+            {userContext.user && <Logout />}
         </div>
     );
 }

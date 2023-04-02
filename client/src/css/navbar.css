@@ -2,7 +2,8 @@
     float:left;
     justify-content: space-between;
     align-items: center;
-    width: 15%;
+    width: 25%;
+    /* overflow-wrap:break-word; */
     /* padding: 1rem; */
   }
   
@@ -40,26 +41,28 @@
     margin: 0 10px;
   }
 
-  .navlink {
+  .navlink{
     text-decoration: none;
-
   }
 
-  .navbar-item:hover {
-    background-color:rgb(224, 248, 193);
-  
+  .navlink:hover {
+    text-decoration: underline;
+    color: #007bff;
+
   }
   
   .active-link {
     font-weight: bold;
     padding: .5em .5em;
+    /* text-decoration-line: underline; */
+
     /* background-color:rgb(224, 248, 193); */
 
   }
   
   .active-link:hover {
     color: #007bff;
-        background-color:rgb(224, 248, 193);
+        /* background-color:rgb(224, 248, 193); */
 
     /* background-color:red; */
 

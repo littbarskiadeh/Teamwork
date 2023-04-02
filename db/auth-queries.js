@@ -126,7 +126,39 @@ const User = {
         } catch (error) {
             return res.status(400).send(error);
         }
-    }
+    },
+
+    async logout(req, res) {
+        
+        if (!req.body.uuid) {
+            return res.status(400).send({ 'message': 'uuid is missing' });
+        }
+        
+        const logoutQuery = 'UPDATE users SET isloggedin = 0 WHERE uuid = $1'
+        try {            
+            //update the login status field
+            //  ({ rows } = await db.query(logoutQuery, [req.body.uuid]));
+
+            await db.query(logoutQuery, [req.body.uuid])
+            .then(() => {
+                console.log(`User logout successful!`)
+                return res.status(200).send({ status: "success", message: `Logout was succesful.` });
+            })
+            
+            // let data = {
+            //     token: user.token,
+            //     userId: user.id,
+            //     uuid: user.uuid,
+            //     userType: user.usertype,
+            //     user: user
+            // }
+
+            // return res.status(200).send({ status: "success", message: `Logout was succesful.` });
+
+        } catch (error) {
+            return res.status(400).send(error)
+        }
+    },
 }
 
 module.exports = User;
