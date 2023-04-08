@@ -35,6 +35,6 @@ app.get('/', (request, response) => {
     response.json({ info: `Teamwork API version1.0` })
 })
 
-app.listen(port, () => { console.log(`App running on port ${port}.`) })
+app.listen(port, "0.0.0.0", () => { console.log(`App running on port ${port}.`) })
 
 module.exports = app;

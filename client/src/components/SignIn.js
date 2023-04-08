@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { UserContext } from '../hooks/UserContext';
 import { useNavigate } from 'react-router-dom';
 
@@ -16,8 +16,19 @@ const signInSchema = Joi.object({
     password: Joi.string().required()
 });
 
+// useEffect(() => {
+
+//     userContext.user.isLoggedIn = '1';
+
+// })
+
 function SignIn() {
     const userContext = useContext(UserContext);
+    const navigate = useNavigate();
+
+    if(userContext.isLoggedIn === '1') {
+        navigate('/home');
+    }
 
     const setUser = (user) => { 
         console.log(`setting user Context ${user.id}`)
@@ -30,7 +41,7 @@ function SignIn() {
     });
     const [errors, setErrors] = useState({});
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const navigate = useNavigate();
+
 
     const handleChange = event => {
         const { name, value } = event.target;
